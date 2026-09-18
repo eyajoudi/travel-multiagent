@@ -12,13 +12,14 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def _build_client():
-    # Par sécurité, le SDK MCP ne transmet PAS automatiquement toutes les variables
-    # d'environnement du processus parent au sous-processus serveur (seulement un sous-ensemble
-    # système comme PATH). En local ça passait inaperçu car search_server.py relit son propre
-    # .env ; sur un déploiement cloud (pas de .env, clés dans les secrets de la plateforme),
-    # il faut transmettre explicitement l'environnement, ici lu APRÈS que ui/app.py ait copié
-    # les secrets dans os.environ.
     server_env = os.environ.copy()
+
+    # Sur Streamlit Cloud (installation via "uv"), le sous-processus lancé pour un
+    # serveur MCP ne retrouvait pas les paquets pourtant installés (ModuleNotFoundError
+    # sur dotenv/httpx) : l'environnement hérité ne suffit pas à lui seul. On force donc
+    # explicitement le sous-processus à chercher dans les MÊMES dossiers que l'interpréteur
+    # actuel (sys.path), ce qui règle le problème quel que soit le mécanisme d'installation.
+    server_env["PYTHONPATH"] = os.pathsep.join(sys.path)
 
     return MultiServerMCPClient(
         {
