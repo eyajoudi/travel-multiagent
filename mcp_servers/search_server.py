@@ -4,13 +4,19 @@ Remplace AviationStack/Tavily du schéma par Tavily (recherche web, gratuit,
 suffisant pour un projet étudiant : il retourne de vraies pages de résultats).
 """
 import os
+import sys
 from dotenv import load_dotenv
 from tavily import TavilyClient
 from mcp.server.fastmcp import FastMCP
 
 load_dotenv()
 mcp = FastMCP("search-server")
-tavily = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+
+_tavily_key = os.environ.get("TAVILY_API_KEY")
+if not _tavily_key:
+    print("ERREUR: TAVILY_API_KEY manquante dans l'environnement du sous-processus.", file=sys.stderr)
+    sys.exit(1)
+tavily = TavilyClient(api_key=_tavily_key)
 
 
 @mcp.tool()
