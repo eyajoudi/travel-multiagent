@@ -40,8 +40,11 @@ def join_before_budget(state: TravelState) -> TravelState:
     return {}
 
 
-def human_review_node(state: TravelState) -> TravelState:
-    """Bloc '6. HUMAN-IN-THE-LOOP'. Coupe l'exécution et attend une décision humaine."""
+async def human_review_node(state: TravelState) -> TravelState:
+    """Bloc '6. HUMAN-IN-THE-LOOP'. Coupe l'exécution et attend une décision humaine.
+    Doit être async : en sync, LangGraph l'exécute dans un thread séparé où le
+    contexte requis par interrupt() (contextvar de configuration) ne se propage pas
+    correctement, d'où "Called get_config outside of a runnable context"."""
     decision = interrupt(
         {
             "question": "Voici l'itinéraire proposé. Approuvez-vous ?",
