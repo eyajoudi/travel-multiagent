@@ -8,6 +8,17 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
+
+# Sur Streamlit Community Cloud, les clés API sont saisies dans "Secrets" (st.secrets),
+# pas dans un fichier .env. On les recopie dans os.environ pour que llm.py, search_server.py
+# et weather_server.py (qui utilisent tous os.environ) fonctionnent sans rien changer d'autre.
+for _key in ["GROQ_API_KEY", "TAVILY_API_KEY", "LANGCHAIN_API_KEY", "LANGCHAIN_TRACING_V2", "LANGCHAIN_PROJECT"]:
+    try:
+        if _key in st.secrets:
+            os.environ[_key] = str(st.secrets[_key])
+    except Exception:
+        pass  # pas de secrets.toml en local : on garde le .env chargé par llm.py
+
 from langgraph.types import Command
 from graph import build_graph
 

@@ -36,7 +36,7 @@ def input_guardrail_node(state: TravelState) -> TravelState:
     return {
         "is_valid": result.get("pass", True),
         "block_reason": result.get("reason", ""),
-        "llm_calls": state.get("llm_calls", 0) + 1,
+        "llm_calls": 1,
     }
 
 

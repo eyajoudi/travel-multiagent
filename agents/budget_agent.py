@@ -22,5 +22,5 @@ async def budget_agent_node(state: TravelState) -> TravelState:
 
     return {
         "budget_analysis": {"summary": response.content},
-        "llm_calls": state.get("llm_calls", 0) + 1,
+        "llm_calls": 1,
     }

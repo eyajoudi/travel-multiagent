@@ -5,7 +5,8 @@ guardrail -> supervisor -> (agents spécialisés en parallèle) -> budget -> iti
 """
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Send, interrupt
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
+import sqlite3
 
 from state import TravelState
 from guardrails import input_guardrail_node, route_after_guardrail
@@ -97,5 +98,9 @@ def build_graph():
     )
     graph.add_edge("final_response", END)
 
-    checkpointer = MemorySaver()  # nécessaire pour interrupt()/resume
+    # SqliteSaver plutôt que MemorySaver : l'état d'une conversation en attente
+    # de validation humaine (HITL) survit à un redémarrage de l'app (ex: Streamlit Cloud
+    # qui se met en veille après inactivité).
+    conn = sqlite3.connect("travel_agent_state.db", check_same_thread=False)
+    checkpointer = SqliteSaver(conn)
     return graph.compile(checkpointer=checkpointer)

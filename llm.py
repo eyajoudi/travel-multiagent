@@ -14,6 +14,7 @@ def get_llm(temperature: float = 0):
         model="openai/gpt-oss-20b",
         temperature=temperature,
         api_key=os.environ["GROQ_API_KEY"],
+        max_retries=3,  # absorbe les 429 (rate limit) au lieu de planter l'agent
     )
 
 

@@ -1,6 +1,6 @@
 from langgraph.prebuilt import create_react_agent
 from llm import get_llm
-from mcp_client import get_all_tools
+from agents.tools import get_all_tools
 from state import TravelState
 
 
@@ -14,10 +14,13 @@ async def weather_agent_node(state: TravelState) -> TravelState:
         f"Donne les prévisions météo pour {constraints.get('destination')} et déduis-en "
         f"des conseils de bagages (vêtements à prévoir)."
     )
-    result = await agent.ainvoke({"messages": [("user", query)]})
-    summary = result["messages"][-1].content
+    try:
+        result = await agent.ainvoke({"messages": [("user", query)]})
+        summary = result["messages"][-1].content
+    except Exception as e:
+        summary = f"Météo indisponible pour le moment (service externe en erreur). ({e})"
 
     return {
         "weather_info": {"summary": summary},
-        "llm_calls": state.get("llm_calls", 0) + 1,
+        "llm_calls": 1,
     }

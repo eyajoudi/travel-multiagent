@@ -1,0 +1,6 @@
+[client]
+# "viewer" cache le bouton Deploy et les options développeur, en local comme en ligne.
+toolbarMode = "viewer"
+
+[theme]
+primaryColor = "#2E75B6"

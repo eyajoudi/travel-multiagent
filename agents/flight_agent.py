@@ -1,6 +1,6 @@
 from langgraph.prebuilt import create_react_agent
 from llm import get_llm
-from mcp_client import get_all_tools
+from agents.tools import get_all_tools
 from state import TravelState
 
 
@@ -15,10 +15,13 @@ async def flight_agent_node(state: TravelState) -> TravelState:
         f"{constraints.get('destination')} pour {constraints.get('month_or_date', 'le mois prochain')}. "
         f"Résume les meilleures options (compagnie, prix approximatif, durée)."
     )
-    result = await agent.ainvoke({"messages": [("user", query)]})
-    summary = result["messages"][-1].content
+    try:
+        result = await agent.ainvoke({"messages": [("user", query)]})
+        summary = result["messages"][-1].content
+    except Exception as e:
+        summary = f"Vols indisponibles pour le moment (service externe en erreur). ({e})"
 
     return {
         "flight_results": {"summary": summary},
-        "llm_calls": state.get("llm_calls", 0) + 1,
+        "llm_calls": 1,
     }

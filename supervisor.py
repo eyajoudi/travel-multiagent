@@ -48,5 +48,5 @@ def supervisor_node(state: TravelState) -> TravelState:
         "selected_agents": result["selected_agents"],
         "trip_constraints": result["trip_constraints"],
         "supervisor_reasoning": result["reasoning"],
-        "llm_calls": state.get("llm_calls", 0) + 1,
+        "llm_calls": 1,
     }
